@@ -12,3 +12,7 @@
 - Books management
 - Authors management
 - Publishers management
+
+## Database
+
+PostgreSQL is used as database.
