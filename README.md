@@ -16,3 +16,8 @@
 ## Database
 
 PostgreSQL is used as database.
+
+## Future features
+
+- Readers management
+- Book lending
