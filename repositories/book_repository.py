@@ -13,7 +13,9 @@ class BookRepository:
                 published_at=row[5],
                 is_available=row[6],
                 author_id=row[7],
-                publisher_id=row[8]
+                publisher_id=row[8],
+                author_name=row[9],
+                publisher_name=row[10],
         )
 
     def get_all(self) -> list[Book]:
@@ -22,16 +24,20 @@ class BookRepository:
 
                 cursor.execute("""
                     SELECT
-                        id,
-                        title,
-                        isbn,
-                        pages,
-                        price,
-                        published_at,
-                        is_available,
-                        author_id,
-                        publisher_id
-                    FROM books_join;
+                        b.id,
+                        b.title,
+                        b.isbn,
+                        b.pages,
+                        b.price,
+                        b.published_at,
+                        b.is_available,
+                        b.author_id,
+                        b.publisher_id,
+                        a.name as author_name,
+                        p.name as publisher_name
+                    FROM books_join b
+                    LEFT JOIN authors a ON b.author_id = a.id
+                    LEFT JOIN publishers p ON b.publisher_id = p.id;
                 """)
 
                 rows = cursor.fetchall()
@@ -44,17 +50,21 @@ class BookRepository:
 
                 cursor.execute("""
                     SELECT
-                        id,
-                        title,
-                        isbn,
-                        pages,
-                        price,
-                        published_at,
-                        is_available,
-                        author_id,
-                        publisher_id
-                    FROM books_join
-                    WHERE id = %s;
+                        b.id,
+                        b.title,
+                        b.isbn,
+                        b.pages,
+                        b.price,
+                        b.published_at,
+                        b.is_available,
+                        b.author_id,
+                        b.publisher_id,
+                        a.name as author_name,
+                        p.name as publisher_name
+                    FROM books_join b
+                    LEFT JOIN authors a ON b.author_id = a.id
+                    LEFT JOIN publishers p ON b.publisher_id = p.id
+                    WHERE b.id = %s;
                 """, (book_id,))
 
                 row = cursor.fetchone()
