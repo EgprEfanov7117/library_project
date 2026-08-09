@@ -6,4 +6,4 @@ class Publisher:
     name: str
 
     def __str__(self):
-        return f"{self.id} | {self.name}"
+        return f"ID: {self.id} | Имя: {self.name}"

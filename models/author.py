@@ -8,4 +8,4 @@ class Author():
     country: str
 
     def __str__(self):
-        return f"ID:{self.id} {self.name} ({self.birth_year}) {self.country}"
+        return f"ID: {self.id}\nИмя: {self.name}\nДата рождения: {self.birth_year}\nСтрана:{self.country}\n"
