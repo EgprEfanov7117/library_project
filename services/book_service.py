@@ -2,13 +2,18 @@ from repositories.book_repository import BookRepository
 from models.book import Book
 from validators.book_validator import BookValidator
 from exception_library import BookNotFound
+from repositories.interfaces.book_repository import BookRepositoryInterface
 
 class BookService:
 
-    def __init__(self):
+    def __init__(
+            self,
+            repository: BookRepositoryInterface,
+            validator: BookValidator
+    ):
         
-        self.book_repository = BookRepository()
-        self.book_validator = BookValidator()
+        self.book_repository = repository
+        self.book_validator = validator
         
     
     def get_all(self) -> list[Book]:
