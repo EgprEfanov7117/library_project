@@ -2,12 +2,16 @@ from models.publisher import Publisher
 from repositories.publisher_repository import PublisherRepository
 from database import get_connection
 from exception_library import EmptyNameError
+from repositories.interfaces.publisher_repository import PublisherRepositoryInterface
 
 class PublisherService:
     
-    def __init__(self):
+    def __init__(
+            self,
+            repository: PublisherRepositoryInterface,
+    ):
 
-        self.publisher_repository = PublisherRepository()
+        self.publisher_repository = repository
     
     def _validate_name(self, name: str) -> None:
         if not name.strip():
