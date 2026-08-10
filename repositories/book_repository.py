@@ -1,7 +1,8 @@
 from database import get_connection
 from models.book import Book
+from repositories.interfaces.book_repository import BookRepositoryInterface
 
-class BookRepository:
+class BookRepository(BookRepositoryInterface):
 
     def _map_to_book(self, row: tuple) -> Book:
         return Book(
