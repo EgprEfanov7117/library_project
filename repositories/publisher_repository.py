@@ -1,8 +1,9 @@
 from models.publisher import Publisher
 from database import get_connection
+from repositories.interfaces.publisher_repository import PublisherRepositoryInterface
 
 #publishers
-class PublisherRepository:
+class PublisherRepository(PublisherRepositoryInterface):
 
     def _map_to_publisher(self, row: tuple) -> Publisher:
         return Publisher(
