@@ -1,7 +1,8 @@
 from database import get_connection
 from models.author import Author
+from repositories.interfaces.author_repository import AuthorRepositoryInterface
 
-class AuthorRepository:
+class AuthorRepository(AuthorRepositoryInterface):
 
     def _map_to_author(self, row: tuple) -> Author:
         return Author(
