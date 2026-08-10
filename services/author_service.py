@@ -2,13 +2,18 @@ from models.author import Author
 from repositories.author_repository import AuthorRepository
 from validators.author_validator import AuthorValidator
 from exception_library import AuthorNotFound
+from repositories.interfaces.author_repository import AuthorRepositoryInterface
 
 class AuthorService:
     
-    def __init__(self):
+    def __init__(
+            self,
+            repository: AuthorRepositoryInterface,
+            validator: AuthorValidator
+    ):
         
-        self.author_repository = AuthorRepository()
-        self.author_validator = AuthorValidator()
+        self.author_repository = repository
+        self.author_validator = validator
 
     
     def get_all(self) -> list[Author]:
