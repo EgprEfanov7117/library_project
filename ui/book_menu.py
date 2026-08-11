@@ -29,7 +29,7 @@ class BookMenu:
             elif choice == "3":
                 self.add()
             elif choice == "4":
-                print("\nИзменение книги пока в разработке.")
+                self.update()
             elif choice == "5":
                 print("\nУдаление книги пока в разработке.")
             elif choice == "0":
@@ -118,6 +118,85 @@ class BookMenu:
 
         print("\nКнига успешно добавлена.")
 
+    def update(self) -> None:
+        print(" === Изменение книиг ===")
+
+        try:
+           book_id = int(input("Введите ID книги: "))
+        except ValueError:
+           print("Ошибка: ID книги должно быть целым числом.") 
+           return
+
+        try:
+            book = self.book_service.find_by_id(book_id)
+        except BookNotFound as e:
+            print(e)
+            return
+        
+        print(" --- Текущие данные книги ---")
+        print(book)
+
+        print(" --- Введите новые данные ---")
+        print("(чтобы оставить значения без изменения, нажмите Enter.)")
+
+        title = input(f"Название [{book.title}]: ").strip()
+        isbn = input(f"ISBN [{book.isbn}]: ").strip()
+        pages_input = input(f"Количество страниц [{book.pages}]: ").strip()
+        price_input = input(f"Цена [{book.price}]").strip()
+        published_at_input = input(f"Дата публикации [{book.published_at}]: ").strip()
+        is_available_input = input(f"Доступна [{("y" if book.is_available else "n")}]: ").strip().lower()
+        author_id_input = input(f"ID автора [{book.author_id}]: ").strip()
+        publisher_id_input = input(f"ID издательства [{book.publisher_id}]: ").strip()
+
+        if title:
+            book.title = title
+        if isbn:
+            book.isbn = isbn
+        if pages_input:
+            try:
+                book.pages = int(pages_input)
+            except ValueError:
+                print("Ошибка: количество страниц должно быть целым числом.")
+                return
+        if price_input:
+            try:
+                book.price = float(price_input)
+            except ValueError:
+                print("Ошибка: цена должна быть числом.")
+                return
+        if published_at_input:
+            try:
+                book.published_at = date.fromisoformat(published_at_input)
+            except ValueError:
+                print("Ошибка: дата должна быть в формате ГГГГ-ММ-ДД.")
+                return
+        if is_available_input:
+            if is_available_input == "y":
+                book.is_available = True
+            elif is_available_input == "n":
+                book.is_available = False
+            else:
+                print("Ошибка: введите «y» или «n».")
+                return
+        if author_id_input:
+            try:
+                book.author_id = int(author_id_input)
+            except ValueError:
+                print("Ошибка: ID автора должно быть целым числом")
+                return
+        if publisher_id_input:
+            try:
+                book.publisher_id = int(publisher_id_input)
+            except ValueError:
+                print("Ошибка: ID издательства должно быть целым числом")
+                return
+        try:
+            self.book_service.update(book)
+        except LibraryError as e:
+            print(e)
+            return
+
+        print("\nКнига успешно изменена.")
 
     def _print_books(self, books: list[Book]) -> None:
         print("\n+" + "-" * 103 + "+")
