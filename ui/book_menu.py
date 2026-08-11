@@ -31,7 +31,7 @@ class BookMenu:
             elif choice == "4":
                 self.update()
             elif choice == "5":
-                print("\nУдаление книги пока в разработке.")
+                self.delete()
             elif choice == "0":
                 break
             else:
@@ -197,6 +197,36 @@ class BookMenu:
             return
 
         print("\nКнига успешно изменена.")
+
+    def delete(self) -> None:
+        print(" === Удаление книги ===")
+        try:
+            book_id = int(input("Введите ID книги для удаления: "))
+        except ValueError:
+            print("Ошибка: ID должно быть целым числом.")
+        
+        try:
+            book = self.book_service.find_by_id(book_id)
+        except BookNotFound as e:
+            print(e)
+            return
+
+        print("\nВы собираетесь удалить книгу:")
+        print("-" * 40)
+        print(book)
+        print("-" * 40)
+
+        confirmation = input("Вы уверены что хотите удалить книгу? (y/n)").strip().lower
+        if confirmation != "y":
+            print("\nУдаление отменено.")
+            return
+        
+        try:
+            self.book_service.delete(book_id)
+        except BookNotFound as error:
+            print(error)
+            return
+
 
     def _print_books(self, books: list[Book]) -> None:
         print("\n+" + "-" * 103 + "+")
