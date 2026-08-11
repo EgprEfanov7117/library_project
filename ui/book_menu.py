@@ -1,5 +1,6 @@
 from models.book import Book
-from exception_library import BookNotFound
+from exception_library import LibraryError, BookNotFound
+from datetime import date
 
 class BookMenu:
 
@@ -26,7 +27,7 @@ class BookMenu:
             elif choice == "2":
                 self.find_by_id()
             elif choice == "3":
-                print("\nДобавление книги пока в разработке.")
+                self.add()
             elif choice == "4":
                 print("\nИзменение книги пока в разработке.")
             elif choice == "5":
@@ -73,7 +74,50 @@ class BookMenu:
         print(book)
         print("\n+" + "-" * 38 + "+")
             
+    def add(self) -> None:
+        print(" === Добавление новой книиг ===")
+        title = input("Введите название книги: ")
+        isbn = input("Введите ISBN книги: ")
         
+        try:
+            pages = int(input("Введите количество страниц: "))
+            price = float(input("Введите цену книги: "))
+            published_at = date.fromisoformat(input("Дата публикации (ГГГГ-ММ-ДД): "))
+            author_id = int(input("Введите ID автора: "))
+            publisher_id = int(input("Введите ID издательства: "))
+        except:
+            print("Ошибка: количество странц книги должно быть целым числом.")
+        
+        is_available = input("Книга доступна? (y/n): ").strip().lower()
+        
+        if is_available == "y":
+            is_available = True
+        if is_available == "n":
+            is_available = False
+        else:
+            print("\nОшибка: введите «y» или «n».")
+            return
+        
+        book = Book(
+            id=0,
+            title=title,
+            isbn=isbn,
+            pages=pages,
+            price=price,
+            published_at=published_at,
+            is_available=is_available,
+            author_id=author_id,
+            publisher_id=publisher_id
+        )
+
+        try:
+            self.book_service.add(book)
+        except LibraryError as e:
+            print(f"\n{e}")
+            return
+
+        print("\nКнига успешно добавлена.")
+
 
     def _print_books(self, books: list[Book]) -> None:
         print("\n+" + "-" * 103 + "+")
