@@ -77,7 +77,7 @@ class AuthorMenu:
         print(" 2. Имени")
         print(" 0. Отмена")
 
-        choice = input("Выберите поле").strip()
+        choice = input("Выберите поле: ").strip()
 
         sort_fields = {
             "1": lambda author: author.id,
@@ -110,4 +110,31 @@ class AuthorMenu:
         )
 
     def _filter_authors(self, authors: list[Author]) -> list[Author]:
-        pass
+        print("Фильтровать по:")
+        print(" 1. Дате рождения")
+        print(" 0. Отмена")
+
+        choice = input("Выберите поле: ").strip()
+
+        if choice == "0":
+            return authors
+        
+        if choice != "1":
+            print("Ошибка: такого варианта фильтрации нет.")
+        
+        print("Сортировка по году рождения")
+        try:
+            min_year = int(input("От: "))
+            max_year = int(input("До: "))
+        except ValueError:
+            print("Ошибка: год должен быть целым числом")
+            return authors
+        
+        if min_year > max_year:
+            print("Ошибка: минимальная год не может быть больше максимального")
+            return authors
+        
+        return [
+            author for author in authors
+            if min_year <= author.birth_year <= max_year
+        ]
