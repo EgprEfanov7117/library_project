@@ -21,7 +21,7 @@ class AuthorMenu:
             choice = input("| Выберите действие: ")
 
             if choice == "1":
-                print("Показ всех авторов пока в разработке.")
+                self.show_all()
             elif choice == "2":
                 print("Показ автора по ID пока в разработке.")
             elif choice == "3":
@@ -44,12 +44,12 @@ class AuthorMenu:
         sort = input("Сортировать? (y/n): ").strip().lower()
 
         if sort == "y":
-            print("Сортировка еще в разработке")
+            authors = self._sort_authors(authors)
 
         filter = input("Фильтровать? (y/n): ").strip().lower()
 
         if filter == "y":
-            print("Фильтрация еще в разработке")
+            authors = self._filter_authors(authors)
         
         self._print_authors(authors)
 
