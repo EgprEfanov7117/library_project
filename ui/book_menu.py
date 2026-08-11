@@ -76,3 +76,48 @@ class BookMenu:
                 f"{'Да' if book.is_available else 'Нет':<10}"
             )
         print("\n+" + "-" * 102 + "+")
+
+    def _sort_books(self, books: list[Book]) -> list[Book]:
+        print("Сортировать по: ")
+        print(" 1. ID")
+        print(" 2. Названию")
+        print(" 3. Цене")
+        print(" 4. Дате публикации")
+        print(" 5. Количеству страниц")
+        print(" 0. Отмена")
+
+        choice = input("Выберите поле: ")
+
+        sort_fields = {
+            "1": lambda book: book.id,
+            "2": lambda book: book.title.lower(),
+            "3": lambda book: book.price,
+            "4": lambda book: book.published_at,
+            "5": lambda book: book.pages
+        }
+
+        if choice == "0":
+            return books
+        
+        if choice not in sort_fields:
+            print("Ошибка: такого варианта сортировки нет.")
+            return books
+
+        print("\nНаправление сортировки:")
+        print(" 1. По возрастанию")
+        print(" 2. По убыванию")
+
+        direction = input("Выберите направление: ")
+
+        if direction not in ("1", "2"):
+            print("Ошибка: такого направления нет.")
+            return books
+
+        reverse = direction == "2"
+
+        return sorted(
+            books,
+            key=sort_fields[choice],
+            reverse=reverse
+        )
+    
