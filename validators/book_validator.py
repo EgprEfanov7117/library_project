@@ -30,13 +30,9 @@ class BookValidator:
         if price <= 0:
             raise ValueError("Ошибка: Цена должна быть положительным числом")
     
-    def _validate_date(self, date_str: str) -> None:
-        try:
-            published_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-        except ValueError:
-            raise ValueError("Ошибка: Дата должна быть в формате ГГГГ-ММ-ДД")
+    def _validate_date(self, published_date: date) -> None:
         if published_date > date.today():
-            raise ValueError("Ошибка: Дата публикации не может быть в будующем")
+            raise ValueError("Ошибка: Дата публикации не может быть в будущем")
     
     def _validate_author_by_id(self, author_id: int) -> None:
         if author_id is not None and self.author_repository.get_by_id(author_id) is None:
