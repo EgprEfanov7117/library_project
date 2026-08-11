@@ -121,3 +121,88 @@ class BookMenu:
             reverse=reverse
         )
     
+    def _filte_books(self, books: list[Book]) -> list[Book]:
+        print("\nФильтровать по:")
+        print(" 1. Доступности")
+        print(" 2. Автору")
+        print(" 3. Издательству")
+        print(" 4. Цене")
+        print(" 5. Количеству страниц")
+        print(" 0. Отмена")
+
+        choice = input("Выберите поле: ")
+
+        if choice == "0":
+            return books
+        
+        if choice == "1":
+            print("\n 1.Только доступные")
+            print(" 2. Только не доступные")
+
+            availability = input("Выберите вариант: ")
+
+            if availability == "1":
+                return [book for book in books if book.is_available]
+            
+            if availability == "2":
+                return [book for book in books if not book.is_available]
+            
+            print("Ошибка: такого варианта нет.")
+            return books
+
+        if choice == "2":
+            author_name = input("Введите имя автора: ").strip().lower()
+
+            return [
+                book for book in books 
+                if author_name 
+                and author_name in book.author_name.lower()
+            ]
+        
+        if choice == "3":
+            publisher_name = input("Введите название издательства: ").strip().lower()
+
+            return [
+                book for book in books
+                if publisher_name
+                and publisher_name in book.publisher_name.lower()
+            ]
+        
+        if choice == "4":
+            try:
+                min_price = float(input("Введите минимальную цену: "))
+                max_price = float(input("Введите максимальную цену: "))
+            except ValueError:
+                print("Ошибка: цена должна быть числом.")
+                return books
+
+            if min_price > max_price:
+                print("Ошибка: минимальная цена не может быть больше максимальной.")
+                return books
+            
+            return [
+                book for book in books
+                if min_price <= book.price <= max_price
+            ]
+
+        if choice == "5":
+            try:
+                min_pages = int(input("Введите минимальное количество страниц: "))
+                max_pages = int(input("Введите максимальное количество страниц: "))
+            except ValueError:
+                print("Ошибка: количество страниц должно быть целым числом.")
+                return books
+
+            if min_pages > max_pages:
+                print("Ошибка: минимальное количество страниц не может быть больше максимального.")
+                return books
+            
+            return [
+                book for book in books
+                if min_pages <= book.pages <= max_pages
+            ]
+        
+        print("Ошибка: такого варианта фильрации нет.")
+        return books
+    
+    
