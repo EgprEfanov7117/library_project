@@ -1,4 +1,5 @@
 from models.book import Book
+from exception_library import BookNotFound
 
 class BookMenu:
 
@@ -23,7 +24,7 @@ class BookMenu:
             if choice == "1":
                 self.show_all()
             elif choice == "2":
-                print("\nПоиск книги пока в разработке.")
+                self.find_by_id()
             elif choice == "3":
                 print("\nДобавление книги пока в разработке.")
             elif choice == "4":
@@ -54,8 +55,26 @@ class BookMenu:
 
         self._print_books(books)
 
-    
+    def find_by_id(self) -> None:
+        try:
+            book_id = int(input("Введите id книги для поиска: "))
+        except ValueError:
+            print("Ошибка: ID должен быть целым числом")
+            return
+
+        try:
+            book = self.book_service.find_by_id(book_id)
+        except BookNotFound as e:
+            print(e)
+            return
         
+        print(" Книга найдена ")
+        print("\n+" + "-" * 38 + "+")
+        print(book)
+        print("\n+" + "-" * 38 + "+")
+            
+        
+
     def _print_books(self, books: list[Book]) -> None:
         print("\n+" + "-" * 103 + "+")
         print(
