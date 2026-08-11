@@ -1,5 +1,5 @@
 from models.author import Author
-from exception_library import AuthorNotFound
+from exception_library import LibraryError, AuthorNotFound
 
 class AuthorMenu:
 
@@ -26,7 +26,7 @@ class AuthorMenu:
             elif choice == "2":
                 self.find_by_id()
             elif choice == "3":
-                print("Добавление автора пока в разработке.")
+                self.add()
             elif choice == "4":
                 print("Изменение автора пока в разработке.")
             elif choice == "5":
@@ -71,6 +71,31 @@ class AuthorMenu:
         print("\n+" + "-" * 38 + "+")
         print(author)
         print("\n+" + "-" * 38 + "+")
+
+    def add(self) -> None:
+        print(" === Добавление автора === ")
+        name = input("Введите имя автора: ").strip()
+
+        try:
+            birth_year = int(input("Введите год рождения: "))
+        except ValueError:
+            print("Ошибка: год рождения должен быть целым числом. ")
+            return
+        
+        country = input("Введите страну: ").strip()
+
+        author = Author(
+            id=0,
+            birth_year=birth_year,
+            country=country
+        )
+
+        try:
+            self.author_service.add(author)
+        except LibraryError as e:
+            print(e)
+        
+        print("\nАвтор успешно дабавлен.")
 
     def _print_authors(self, authors: list[Author]) -> None:
         print("\n+" + "-" * 52 + "+")
