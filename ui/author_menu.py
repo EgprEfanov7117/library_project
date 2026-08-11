@@ -1,4 +1,5 @@
 from models.author import Author
+from exception_library import AuthorNotFound
 
 class AuthorMenu:
 
@@ -23,7 +24,7 @@ class AuthorMenu:
             if choice == "1":
                 self.show_all()
             elif choice == "2":
-                print("Показ автора по ID пока в разработке.")
+                self.find_by_id()
             elif choice == "3":
                 print("Добавление автора пока в разработке.")
             elif choice == "4":
@@ -52,6 +53,24 @@ class AuthorMenu:
             authors = self._filter_authors(authors)
         
         self._print_authors(authors)
+
+    def find_by_id(self) -> None:
+        try:
+            author_id = int(input("Введите ID автора для поиска"))
+        except ValueError:
+            print("Ошибка: ID должен быть целым числом")
+            return
+        
+        try:
+            author = self.author_service.find_by_id(author_id)
+        except AuthorNotFound as e:
+            print(e)
+            return
+
+        print(" Автор найден ")
+        print("\n+" + "-" * 38 + "+")
+        print(author)
+        print("\n+" + "-" * 38 + "+")
 
     def _print_authors(self, authors: list[Author]) -> None:
         print("\n+" + "-" * 52 + "+")
