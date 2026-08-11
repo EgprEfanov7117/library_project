@@ -58,7 +58,7 @@ class BookMenu:
 
     def find_by_id(self) -> None:
         try:
-            book_id = int(input("Введите id книги для поиска: "))
+            book_id = int(input("Введите ID книги для поиска: "))
         except ValueError:
             print("Ошибка: ID должен быть целым числом")
             return
@@ -75,14 +75,14 @@ class BookMenu:
         print("\n+" + "-" * 38 + "+")
             
     def add(self) -> None:
-        print(" === Добавление новой книиг ===")
+        print(" === Добавление новой книги ===")
         title = input("Введите название книги: ")
         isbn = input("Введите ISBN книги: ")
         
         try:
             pages = int(input("Введите количество страниц: "))
             price = float(input("Введите цену книги: "))
-            published_at = date.fromisoformat(input("Дата публикации (ГГГГ-ММ-ДД): "))
+            published_at = date.fromisoformat(input("Введите дату публикации (ГГГГ-ММ-ДД): "))
             author_id = int(input("Введите ID автора: "))
             publisher_id = int(input("Введите ID издательства: "))
         except:
@@ -119,7 +119,7 @@ class BookMenu:
         print("\nКнига успешно добавлена.")
 
     def update(self) -> None:
-        print(" === Изменение книиг ===")
+        print(" === Изменение книги ===")
 
         try:
            book_id = int(input("Введите ID книги: "))
@@ -310,7 +310,7 @@ class BookMenu:
             return books
         
         if choice == "1":
-            print("\n 1.Только доступные")
+            print("\n 1. Только доступные")
             print(" 2. Только не доступные")
 
             availability = input("Выберите вариант: ")
