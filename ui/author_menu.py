@@ -1,3 +1,4 @@
+from models.author import Author
 
 class AuthorMenu:
 
@@ -33,3 +34,45 @@ class AuthorMenu:
                 break
             else:
                 print("\nОшибка: такого пункта меню нет.")
+
+    def show_all(self) -> None:
+        authors = self.author_service.get_all()
+
+        if not authors:
+            print("\n Авторов нет")
+        
+        sort = input("Сортировать? (y/n): ").strip().lower()
+
+        if sort == "y":
+            print("Сортировка еще в разработке")
+
+        filter = input("Фильтровать? (y/n): ").strip().lower()
+
+        if filter == "y":
+            print("Фильтрация еще в разработке")
+        
+        self._print_authors(authors)
+
+    def _print_authors(self, authors: list[Author]) -> None:
+        print("\n+" + "-" * 52 + "+")
+        print(
+            f"{'| ID':<5}"
+            f"{'| Имя':<20}"
+            f"{'| Страна':<25}"
+        )
+        print("\n+" + "-" * 52 + "+")
+
+        for author in authors:
+            print(
+                f"{author.id:<5}"
+                f"{author.name[:18]:<20}"
+                f"{author.country[:23]:<25}"
+            )
+            
+        print("\n+" + "-" * 52 + "+")
+    
+    def _sort_authors(self, authors: list[Author]) -> list[Author]:
+        pass
+
+    def _filter_authors(self, authors: list[Author]) -> list[Author]:
+        pass
