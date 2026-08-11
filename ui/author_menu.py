@@ -72,7 +72,42 @@ class AuthorMenu:
         print("\n+" + "-" * 52 + "+")
     
     def _sort_authors(self, authors: list[Author]) -> list[Author]:
-        pass
+        print("Сортировать по:")
+        print(" 1. ID")
+        print(" 2. Имени")
+        print(" 0. Отмена")
+
+        choice = input("Выберите поле").strip()
+
+        sort_fields = {
+            "1": lambda author: author.id,
+            "2": lambda author: author.name.lower(),
+        }
+
+        if choice == "0":
+            return authors
+    
+        if choice not in sort_fields:
+            print("Ошибка: такого варианта сортировки нет.")
+            return
+
+        print("\nНаправление сортировки:")
+        print(" 1. По возрастанию")
+        print(" 2. По убыванию")
+
+        direction = input("Выберите направление: ")
+
+        if direction not in ("1", "2"):
+            print("Ошибка: такого направления нет.")
+            return authors
+
+        reverse = direction == "2"
+
+        return sorted(
+            authors,
+            key=sort_fields[choice],
+            reverse=reverse
+        )
 
     def _filter_authors(self, authors: list[Author]) -> list[Author]:
         pass
