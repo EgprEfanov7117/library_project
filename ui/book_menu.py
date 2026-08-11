@@ -10,18 +10,18 @@ class BookMenu:
             print("\n+" + "-" * 38 + "+")
             print("|" + " " * 17 + "КНИГИ" + " " * 16 + "|")
             print("\n+" + "-" * 38 + "+")
-            print("|    1. Показать все книги" + " " * 26 + "|")
-            print("|    2. Найти книгу по ID" + " " * 26 + "|")
-            print("|    3. Добавить книгу" + " " * 26 + "|")
-            print("|    4. Изменить книгу" + " " * 26 + "|")
-            print("|    5. Удалить книгу" + " " * 26 + "|")
+            print("|    1. Показать все книги" + " " * 13 + "|")
+            print("|    2. Найти книгу по ID" + " " * 14 + "|")
+            print("|    3. Добавить книгу" + " " * 17 + "|")
+            print("|    4. Изменить книгу" + " " * 17 + "|")
+            print("|    5. Удалить книгу" + " " * 18 + "|")
             print("|    0. Назад" + " " * 26 + "|")
             print("\n+" + "-" * 38 + "+")
 
             choice = input("| Выберите действие: ")
 
             if choice == "1":
-                print("\nПоказ всех книг пока в разработке.")
+                self.show_all()
             elif choice == "2":
                 print("\nПоиск книги пока в разработке.")
             elif choice == "3":
@@ -45,14 +45,16 @@ class BookMenu:
         sort = input("\nСортировать? (y/n): ").lower()
 
         if sort == "y":
-            print("Функция сортировки еще не реализвана")
+            books = self._sort_books(books)
 
         filter = input("\nФильтровать? (y/n): ").lower()
 
         if filter == "y":
-            print("Функция фильтрации еще не реализована")
+            books = self._filte_books(books)
 
         self._print_books(books)
+
+    
         
     def _print_books(self, books: list[Book]) -> None:
         print("\n+" + "-" * 103 + "+")
