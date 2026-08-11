@@ -1,22 +1,24 @@
+
+class LibraryError(Exception):
+    pass
+
 # ===== Book =====
-class BookNotFound(Exception):
+class BookNotFound(LibraryError):
     pass
 
-class EmptyBookTitleError(Exception):
+class EmptyBookTitleError(LibraryError):
     pass
-
-
 
 
 # ===== Author =====
-class AuthorNotFound(Exception):
+class AuthorNotFound(LibraryError):
     pass
-class EmptyNameError(Exception):
+class EmptyNameError(LibraryError):
     pass
-class EmptyCountryError(Exception):
+class EmptyCountryError(LibraryError):
     pass
 
 
 # ===== Publisher =====
-class PublisherNotFound(Exception):
+class PublisherNotFound(LibraryError):
     pass
