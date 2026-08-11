@@ -28,7 +28,7 @@ class AuthorMenu:
             elif choice == "3":
                 self.add()
             elif choice == "4":
-                print("Изменение автора пока в разработке.")
+                self.update()
             elif choice == "5":
                 print("Удаление автора пока в разработке.")
             elif choice == "0":
@@ -96,6 +96,49 @@ class AuthorMenu:
             print(e)
         
         print("\nАвтор успешно дабавлен.")
+
+    def update(self) -> None:
+        print(" === Изменение Автора === ")
+        
+        try:
+            author_id = int(input("Введите ID автора: "))
+        except ValueError:
+            print("Ошибка: ID автора должно быть целым числом")
+            return
+        
+        try:
+            author = self.author_service.find_by_id(author_id)
+        except AuthorNotFound as e:
+            print(e)
+            return
+        
+        print(" --- Текущие данные ---")
+        print(author)
+
+        print(" --- Введите новые данные --- ")
+        print("(чтобы оставить значения без изменения, нажмите Enter.)")
+
+        name = input(f"Имя [{author.name}]: ").strip()
+        birth_year_input = input(f"Год рождения [{author.birth_year}]: ")
+        country = input(f"Страна [{author.country}]: ").strip()
+
+        if name:
+            author.name = name
+        if birth_year_input:
+            try:
+                author.birth_year = int(birth_year_input)
+            except ValueError:
+                print("Ошибка: год рождения должен быть целым числом")
+        if country:
+            author.country = country
+
+        try:
+            self.author_service.update(author)
+        except LibraryError as e:
+            print(e)
+            return
+
+        print("\nДанные об авторе успешно изменены.")
 
     def _print_authors(self, authors: list[Author]) -> None:
         print("\n+" + "-" * 52 + "+")
