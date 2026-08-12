@@ -84,6 +84,40 @@ class PublisherMenu:
         
         print("\nИздательство успешно добавлено")
 
+    def update(self) -> None:
+        print(" === Изменение издательства ===")
+
+        try:
+            publisher_id = int(input("Введите ID издательства: "))
+        except ValueError:
+            print("Ошибка: ID издательства должно быть целым числом.") 
+            return
+
+        try:
+            publisher = self.publisher_service.find_by_id(publisher_id)
+        except PublisherNotFound as e:
+            print(e)
+            return
+        
+        print(" --- Текущие данные издательства ---")
+        print(publisher)
+
+        print(" --- Введите новые данные ---")
+        print("(чтобы оставить значения без изменения, нажмите Enter.)")
+
+        name = input(f"Название [{publisher.name}]: ").strip()
+
+        if name:
+            publisher.name = name
+        
+        try:
+            self.publisher_service.update(publisher)
+        except LibraryError as e:
+            print(e)
+            return
+        
+        print("\nИздательство успешно изменено.")
+
     def _print_publishers(self, publishers: list[Publisher]) -> None:
         print("\n+" + "-" * 40 + "+")
         print(
