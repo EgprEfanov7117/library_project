@@ -1,3 +1,4 @@
+from models.publisher import Publisher
 
 class PublisherMenu:
 
@@ -33,3 +34,36 @@ class PublisherMenu:
                 break
             else:
                 print("\nОшибка: такого пункта меню нет.")
+    
+    def show_all(self) -> None:
+        publishers = self.publisher_service.get_all()
+
+        if not publishers:
+            print("\nИздательств нет.")
+            return
+        
+        sort = input("\nСортировать? (y/n): ").lower()
+
+        if sort == "y":
+            print("Сортировка в разработке")
+        filter = input("\nФильтровать? (y/n): ").lower()
+
+        if filter == "y":
+            print("Фильтрация в разработке")
+        
+        self._print_publishers(publishers)
+
+    def _print_publishers(self, publishers: list[Publisher]) -> None:
+        print("\n+" + "-" * 40 + "+")
+        print(
+            f"{'| ID':<5}"
+            f"{'| Название':<30}"
+        )
+        print("\n+" + "-" * 40 + "+")
+
+        for publisher in publishers:
+            print(
+                f"{publisher.id:<5}"
+                f"{publisher.name[:28]:<30}"
+            )
+        print("\n+" + "-" * 40 + "+")
