@@ -67,3 +67,41 @@ class PublisherMenu:
                 f"{publisher.name[:28]:<30}"
             )
         print("\n+" + "-" * 40 + "+")
+    
+    def _sort_publisher(self, publishers: list[Publisher]) -> list[Publisher]:
+        print("Сортировать по: ")
+        print(" 1. ID")
+        print(" 2. Названию")
+        print(" 0. Отмена")
+
+        choice = input("Выберите поле: ")
+
+        sort_fields = {
+            "1": lambda publisher: publisher.id,
+            "2": lambda publisher: publisher.title.lower()
+        }
+
+        if choice == "0":
+            return publishers
+        
+        if choice not in sort_fields:
+            print("Ошибка: такого варианта сортировки нет.")
+            return publishers
+
+        print("\nНаправление сортировки:")
+        print(" 1. По возрастанию")
+        print(" 2. По убыванию")
+
+        direction = input("Выберите направление: ")
+
+        if direction not in ("1", "2"):
+            print("Ошибка: такого направления нет.")
+            return publishers
+
+        reverse = direction == "2"
+
+        return sorted(
+            publishers,
+            key=sort_fields[choice],
+            reverse=reverse
+        )
