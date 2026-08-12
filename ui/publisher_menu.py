@@ -5,7 +5,7 @@ class PublisherMenu:
     def __init__(self, publisher_service):
         self.publisher_service = publisher_service
 
-    def show():
+    def show(self) -> None:
         while True:
             print("\n+" + "-" * 38 + "+")
             print("|" + " " * 13 + "ИЗДАТЕЛЬСТВА" + " " * 13 + "|")
@@ -21,7 +21,7 @@ class PublisherMenu:
             choice = input("| Выберите действие: ")
 
             if choice == "1":
-                print("Показ всех издательств пока в разработке.")
+                self.show_all()
             elif choice == "2":
                 print("Показ издательства по ID пока в разработке.")
             elif choice == "3":
@@ -45,11 +45,7 @@ class PublisherMenu:
         sort = input("\nСортировать? (y/n): ").lower()
 
         if sort == "y":
-            print("Сортировка в разработке")
-        filter = input("\nФильтровать? (y/n): ").lower()
-
-        if filter == "y":
-            print("Фильтрация в разработке")
+            publishers = self._sort_publisher(publishers)
         
         self._print_publishers(publishers)
 
@@ -105,3 +101,5 @@ class PublisherMenu:
             key=sort_fields[choice],
             reverse=reverse
         )
+    
+    
