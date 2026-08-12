@@ -1,5 +1,5 @@
 from models.publisher import Publisher
-from exception_library import PublisherNotFound
+from exception_library import LibraryError, PublisherNotFound
 
 class PublisherMenu:
 
@@ -66,7 +66,23 @@ class PublisherMenu:
         print("\n+" + "-" * 38 + "+")
         print(publisher)
         print("\n+" + "-" * 38 + "+")
+    
+    def add(self) -> None:
+        print(" === Добавление Издательства ===")
+        name = input("Введите название издательства: ")
+
+        publisher = Publisher(
+            id=0,
+            name=name
+        )
         
+        try:
+            self.publisher_service.add(publisher)
+        except LibraryError as e:
+            print(e)
+            return
+        
+        print("\nИздательство успешно добавлено")
 
     def _print_publishers(self, publishers: list[Publisher]) -> None:
         print("\n+" + "-" * 40 + "+")
