@@ -24,13 +24,13 @@ class PublisherMenu:
             if choice == "1":
                 self.show_all()
             elif choice == "2":
-                print("Показ издательства по ID пока в разработке.")
+                self.find_by_id()
             elif choice == "3":
-                print("Добавление издательства пока в разработке.")
+                self.add()
             elif choice == "4":
-                print("Изменение издательства пока в разработке.")
+                self.update()
             elif choice == "5":
-                print("Удаление издательства пока в разработке.")
+                self.delete
             elif choice == "0":
                 break
             else:
@@ -118,7 +118,7 @@ class PublisherMenu:
         
         print("\nИздательство успешно изменено.")
 
-    def dalete(self) -> None:
+    def delete(self) -> None:
         print(" === Удаление издательства ===")
 
         try:
