@@ -140,6 +140,37 @@ class AuthorMenu:
 
         print("\nДанные об авторе успешно изменены.")
 
+    def delete(self) -> None:
+        print(" === Удаление автора ===")
+
+        try:
+            author_id = int(input("Введите ID автора для удаления: "))
+        except ValueError:
+            print("Ошибка: ID должно быть целым числом.")
+            return 
+        
+        try:
+            author = self.author_service.find_by_id(author_id)
+        except AuthorNotFound as e:
+            print(e)
+        
+        print("\nВы собираетесь удалить автора: ")
+        print("-" * 40)
+        print(author)
+        print("-" * 40)
+
+        confirmation = input("Вы уверены что хотите удалить этого автора? (y/n)").strip().lower()
+
+        if confirmation != "y":
+            print("\nУдаление отменено.")
+            return
+
+        try:
+            self.author_service.delete(author_id)
+        except AuthorNotFound as e:
+            print(e)
+            return
+
     def _print_authors(self, authors: list[Author]) -> None:
         print("\n+" + "-" * 52 + "+")
         print(
