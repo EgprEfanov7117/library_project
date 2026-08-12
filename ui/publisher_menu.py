@@ -118,6 +118,38 @@ class PublisherMenu:
         
         print("\nИздательство успешно изменено.")
 
+    def dalete(self) -> None:
+        print(" === Удаление издательства ===")
+
+        try:
+            publisher_id = int(input("Введите ID издательства для удаления: "))
+        except ValueError:
+            print("Ошибка: ID должно быть целым числом.")
+        
+        try:
+            publisher = self.publisher_service.find_by_is(publisher_id)
+        except PublisherNotFound as e:
+            print(e)
+            return
+        
+        print("\nВы собираетесь удалить:")
+        print("-" * 10)
+        print(publisher)
+        print("-" * 10)
+
+        confirmation = input("Вы уверены что хотите удалить книгу? (y/n)").strip().lower
+        if confirmation != "y":
+            print("\nУдаление отменено.")
+            return
+
+        try:
+            self.publisher_service.delete(publisher_id)
+        except PublisherNotFound as e:
+            print(e)
+            return
+        
+        print("\nИздательство удалено.")
+
     def _print_publishers(self, publishers: list[Publisher]) -> None:
         print("\n+" + "-" * 40 + "+")
         print(
