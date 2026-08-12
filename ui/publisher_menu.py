@@ -1,4 +1,5 @@
 from models.publisher import Publisher
+from exception_library import PublisherNotFound
 
 class PublisherMenu:
 
@@ -48,6 +49,24 @@ class PublisherMenu:
             publishers = self._sort_publisher(publishers)
         
         self._print_publishers(publishers)
+
+    def find_by_id(self) -> None:
+        try:
+            publisher_id = int(input("Введите ID издательства"))
+        except ValueError:
+            print("Ошибка: ID должен быть целым числом")
+            return
+        
+        try:
+            publisher = self.publisher_service.find_by_id(publisher_id)
+        except PublisherNotFound as e:
+            print(e)
+        
+        print(" Издательство найдено ")
+        print("\n+" + "-" * 38 + "+")
+        print(publisher)
+        print("\n+" + "-" * 38 + "+")
+        
 
     def _print_publishers(self, publishers: list[Publisher]) -> None:
         print("\n+" + "-" * 40 + "+")
