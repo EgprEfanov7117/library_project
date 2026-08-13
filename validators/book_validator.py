@@ -1,7 +1,7 @@
 from models.book import Book
-from repositories.author_repository import AuthorRepository
-from repositories.publisher_repository import PublisherRepository
-from datetime import date, datetime
+from datetime import date
+from repositories.interfaces.author_repository import AuthorRepositoryInterface
+from repositories.interfaces.publisher_repository import PublisherRepositoryInterface
 from exception_library import (
     EmptyBookTitleError,
     AuthorNotFound,
@@ -10,9 +10,13 @@ from exception_library import (
 
 class BookValidator:
 
-    def __init__(self):
-        self.author_repository = AuthorRepository
-        self.publisher_repository = PublisherRepository()
+    def __init__(
+            self,
+            author_repository: AuthorRepositoryInterface,
+            publisher_repository: PublisherRepositoryInterface
+    ):
+        self.author_repository = author_repository
+        self.publisher_repository = publisher_repository
 
     def _validate_title(self, title: str) -> None:
         if not title.strip():
@@ -35,11 +39,11 @@ class BookValidator:
             raise ValueError("Ошибка: Дата публикации не может быть в будущем")
     
     def _validate_author_by_id(self, author_id: int) -> None:
-        if author_id is not None and self.author_repository.get_by_id(author_id) is None:
+        if author_id is not None and self.author_repository.find_by_id(author_id) is None:
             raise AuthorNotFound("Ошибка: Автора с таким ID не существует")
     
     def _validate_publisher_by_id(self, publisher_id: int) -> None:
-        if publisher_id is not None and self.publisher_repository.get_by_id(publisher_id) is None:
+        if publisher_id is not None and self.publisher_repository.find_by_id(publisher_id) is None:
             raise PublisherNotFound("Ошибка: Издания с таким ID не существует")
 
     def validate(self, book: Book) -> None:

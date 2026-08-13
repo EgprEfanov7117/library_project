@@ -28,7 +28,7 @@ def main():
     # =========================
 
     author_validator = AuthorValidator()
-    book_validator = BookValidator()
+    book_validator = BookValidator(author_repository, publisher_repository)
 
     # =========================
     # Services
