@@ -131,3 +131,48 @@ def test_future_published_date(book_validator):
 def test_valid_date(book_validator, date):
     book_validator._validate_date(date)
 
+# ============
+# AUTHOR BY ID 
+# ============
+def test_invalid_author_id(book_validator):
+    book_validator.author_repository.find_by_id.return_value = None
+
+    with pytest.raises(AuthorNotFound):
+        book_validator._validate_author_by_id(999)
+    
+    book_validator.author_repository.find_by_id.assert_called_once_with(999) 
+
+def test_valid_author_id(book_validator):
+    book_validator.author_repository.find_by_id.return_value = object()
+
+    book_validator._validate_author_by_id(1)
+
+    book_validator.author_repository.find_by_id.assert_called_once_with(1) 
+
+def test_none_author_id(book_validator):
+    book_validator._validate_author_by_id(None)
+
+    book_validator.author_repository.find_by_id.assert_not_called()
+
+# ===============
+# PUBLISHER BY ID
+# ===============
+def test_invalid_publisher_id(book_validator):
+    book_validator.publisher_repository.find_by_id.return_value = None
+
+    with pytest.raises(PublisherNotFound):
+        book_validator._validate_publisher_by_id(999)
+    
+    book_validator.publisher_repository.find_by_id.assert_called_once_with(999)
+
+def test_valid_publisher_id(book_validator):
+    book_validator.publisher_repository.find_by_id.return_value = object()
+
+    book_validator._validate_publisher_by_id(1)
+
+    book_validator.publisher_repository.find_by_id.assers_called_once_with(1)
+
+def test_none_publisher_id(book_validator):
+    book_validator._validate_publisher_by_id(None)
+
+    book_validator.publisher_repository.find_by_id.assert_not_called()
