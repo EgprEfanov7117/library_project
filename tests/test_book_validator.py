@@ -1,5 +1,6 @@
 import pytest
 from datetime import date, timedelta
+from models.book import Book
 
 from exception_library import EmptyBookTitleError, AuthorNotFound, PublisherNotFound
 
@@ -176,3 +177,56 @@ def test_none_publisher_id(book_validator):
     book_validator._validate_publisher_by_id(None)
 
     book_validator.publisher_repository.find_by_id.assert_not_called()
+
+
+# ===============
+#      BOOK
+# ===============
+
+def test_validate_book(book_validator, valid_book):
+    book_validator.author_repository.get_by_id.return_value = object()
+    book_validator.publisher_repository.get_by_id.return_value = object()
+
+    book_validator.validate(valid_book)
+
+def test_validate_invalid_title(book_validator, valid_book):
+    valid_book.title = ""
+
+    with pytest.raises(EmptyBookTitleError):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_isbn(book_validator, valid_book):
+    valid_book.isbn = "123"
+
+    with pytest.raises(ValueError):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_pages(book_validator, valid_book):
+    valid_book.pages = 0
+
+    with pytest.raises(ValueError):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_price(book_validator, valid_book):
+    valid_book.price = -1
+
+    with pytest.raises(ValueError):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_published_at(book_validator, valid_book):
+    valid_book.published_at = date.today() + timedelta(days=1)
+
+    with pytest.raises(ValueError):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_author(book_validator, valid_book):
+    book_validator.author_repository.find_by_id.return_value = None
+
+    with pytest.raises(AuthorNotFound):
+        book_validator.validate(valid_book)
+
+def test_validate_invalid_publisher(book_validator, valid_book):
+    book_validator.publisher_repository.find_by_id.return_value = None
+
+    with pytest.raises(PublisherNotFound):
+        book_validator.validate(valid_book)
