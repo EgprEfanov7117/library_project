@@ -34,6 +34,7 @@ class AuthorService:
 
     def update(self, author: Author) -> None:
         
+        self.find_by_id(author.id)
         self.author_validator.validate(author)
         self.author_repository.update(author)
 
