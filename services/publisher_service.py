@@ -1,7 +1,5 @@
 from models.publisher import Publisher
-from repositories.publisher_repository import PublisherRepository
-from database import get_connection
-from exception_library import EmptyNameError
+from exception_library import EmptyNameError, PublisherNotFound
 from repositories.interfaces.publisher_repository import PublisherRepositoryInterface
 
 class PublisherService:
@@ -25,7 +23,7 @@ class PublisherService:
 
         publisher = self.publisher_repository.find_by_id(publisher_id)
         if publisher is None:
-            raise ValueError()
+            raise PublisherNotFound()
         return publisher
 
     def add(self, publisher: Publisher) -> None:
@@ -35,6 +33,7 @@ class PublisherService:
 
     def update(self, publisher: Publisher) -> None:
 
+        self.find_by_id(publisher.id)
         self._validate_name(publisher.name)
         self.publisher_repository.update(publisher)
 
