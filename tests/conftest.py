@@ -96,3 +96,36 @@ def test_author(db_connection):
 
     db_connection.commit()
 
+@pytest.fixture
+def clean_publisher():
+    connection = get_test_connection()
+
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM books_join;")
+        cursor.execute("DELETE FROM publishers;")
+    
+    connection.commit()
+    connection.close()
+
+@pytest.fixture
+def test_publisher(db_connection):
+    with db_connection.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO publishers (name)
+            VALUES (%s)
+            RETURNING id;
+        """, ("Тестовое издательство",))
+
+        publisher_id = cursor.fetchone()[0]
+    
+    db_connection.commit()
+
+    yield publisher_id
+
+    with db_connection.cursor() as cursor:
+        cursor.execute(
+            "DELETE FROM publishers WHERE id = %s;",
+            (publisher_id,)
+        )
+
+    db_connection.commit()
