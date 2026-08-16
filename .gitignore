@@ -25,6 +25,13 @@ venv/
 
 .DS_Store
 
-# Coverage
+# ----------------------------
+# Testing
+# ----------------------------
+
 .coverage
 htmlcov/
+.pytest_cache/
+
+
+.env
