@@ -7,6 +7,34 @@ from models.book import Book
 from datetime import date
 
 
+
+# ==============
+#   Database
+# ==============
+
+def get_test_connection():
+    return psycopg.connect(
+        dbname="library_test",
+        user="egor",
+        host="localhost",
+        port=5432
+    )
+
+
+@pytest.fixture
+def db_connection():
+    connection = get_test_connection()
+
+    yield connection
+
+    connection.close()
+
+
+
+# ==============
+#     Book
+# ==============
+
 @pytest.fixture
 def book_validator():
     author_repository = Mock()
@@ -31,24 +59,9 @@ def valid_book():
         publisher_id=1,
     )
 
-
-def get_test_connection():
-    return psycopg.connect(
-        dbname="library_test",
-        user="egor",
-        host="localhost",
-        port=5432
-    )
-
-
-@pytest.fixture
-def db_connection():
-    connection = get_test_connection()
-
-    yield connection
-
-    connection.close()
-
+# ==============
+#    Author
+# ==============
 
 @pytest.fixture
 def clean_authors():
@@ -61,13 +74,6 @@ def clean_authors():
     connection.commit()
     connection.close()
 
-@pytest.fixture
-def db_connection():
-    connection = get_test_connection()
-
-    yield connection
-
-    connection.close()
 
 @pytest.fixture
 def test_author(db_connection):
@@ -95,6 +101,12 @@ def test_author(db_connection):
         )
 
     db_connection.commit()
+
+
+
+# ==============
+#   Publisher
+# ==============
 
 @pytest.fixture
 def clean_publisher():
