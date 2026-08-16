@@ -73,6 +73,6 @@ class PublisherRepository(PublisherRepositoryInterface):
                 cursor.execute("""
                                DELETE FROM publishers
                                WHERE id = %s;
-                               """, (publisher_id))
+                               """, (publisher_id,))
 
     
