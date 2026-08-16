@@ -42,7 +42,7 @@ class PublisherRepository(PublisherRepositoryInterface):
                             WHERE id = %s;
                             """, (publisher_id,))
                 
-                row = cursor.fetchall()
+                row = cursor.fetchone()
         if row is None:
             return None
         return self._map_to_publisher(row)
