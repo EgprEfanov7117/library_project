@@ -5,6 +5,10 @@ from repositories.interfaces.publisher_repository import PublisherRepositoryInte
 #publishers
 class PublisherRepository(PublisherRepositoryInterface):
 
+    def __init__(self, connection_factory=get_connection):
+        self.connection_factory = connection_factory
+
+
     def _map_to_publisher(self, row: tuple) -> Publisher:
         return Publisher(
             id=row[0],
@@ -12,7 +16,7 @@ class PublisherRepository(PublisherRepositoryInterface):
         )
 
     def get_all(self) -> list[Publisher]:
-        with get_connection() as conn:
+        with self.connection_factory() as conn:
             with conn.cursor() as cursor:
 
                 cursor.execute("""
@@ -27,7 +31,7 @@ class PublisherRepository(PublisherRepositoryInterface):
         return [self._map_to_publisher(row) for row in rows]
 
     def find_by_id(self, publisher_id: int) -> Publisher | None:
-        with get_connection() as conn:
+        with self.connection_factory() as conn:
             with conn.cursor() as cursor:
 
                 cursor.execute("""
@@ -44,7 +48,7 @@ class PublisherRepository(PublisherRepositoryInterface):
         return self._map_to_publisher(row)
 
     def add(self, publisher: Publisher) -> None:
-        with get_connection() as conn:
+        with self.connection_factory() as conn:
             with conn.cursor() as cursor:
 
                 cursor.execute("""
@@ -53,7 +57,7 @@ class PublisherRepository(PublisherRepositoryInterface):
                             """, (publisher.name,))
 
     def update(self, publisher: Publisher) -> None:
-        with get_connection() as conn:
+        with self.connection_factory() as conn:
             with conn.cursor() as cursor:
 
                 cursor.execute("""
@@ -63,7 +67,7 @@ class PublisherRepository(PublisherRepositoryInterface):
                                """, (publisher.name, publisher.id))
 
     def delete(self, publisher_id: int) -> None:
-        with get_connection() as conn:
+        with self.connection_factory() as conn:
             with conn.cursor() as cursor:
 
                 cursor.execute("""
