@@ -1,6 +1,25 @@
+from datetime import date
+
 from models.book import Book
 from exception_library import LibraryError, BookNotFound
-from datetime import date
+from ui.ui_helpers import (
+    console,
+    show_screen,
+    show_options,
+    show_success,
+    show_error,
+    show_warning,
+    show_info,
+    ask_choice,
+    ask_text,
+    ask_int,
+    ask_float,
+    ask_date,
+    ask_confirmation,
+    wait_for_enter,
+    create_table,
+)
+
 
 class BookMenu:
 
@@ -9,18 +28,25 @@ class BookMenu:
 
     def show(self) -> None:
         while True:
-            print("\n+" + "-" * 38 + "+")
-            print("|" + " " * 17 + "КНИГИ" + " " * 16 + "|")
-            print("\n+" + "-" * 38 + "+")
-            print("|    1. Показать все книги" + " " * 13 + "|")
-            print("|    2. Найти книгу по ID" + " " * 14 + "|")
-            print("|    3. Добавить книгу" + " " * 17 + "|")
-            print("|    4. Изменить книгу" + " " * 17 + "|")
-            print("|    5. Удалить книгу" + " " * 18 + "|")
-            print("|    0. Назад" + " " * 26 + "|")
-            print("\n+" + "-" * 38 + "+")
+            console.clear()
 
-            choice = input("| Выберите действие: ")
+            show_screen(
+                title="КНИГИ",
+                options=[
+                    ("1", "Показать все книги"),
+                    ("2", "Найти книгу по ID"),
+                    ("3", "Добавить книгу"),
+                    ("4", "Изменить книгу"),
+                    ("5", "Удалить книгу"),
+                    ("0", "Назад"),
+                ],
+            )
+
+            choice = ask_choice(
+                "Выберите действие",
+                choices=["1", "2", "3", "4", "5", "0"],
+                show_choices=False,
+            )
 
             if choice == "1":
                 self.show_all()
@@ -34,70 +60,94 @@ class BookMenu:
                 self.delete()
             elif choice == "0":
                 break
-            else:
-                print("\nОшибка: такого пункта меню нет.")
 
     def show_all(self) -> None:
         books = self.book_service.get_all()
 
         if not books:
-            print("\nКниг нет.")
+            show_warning("Книг нет.")
+            wait_for_enter()
             return
-        
-        sort = input("\nСортировать? (y/n): ").lower()
 
-        if sort == "y":
-            books = self._sort_books(books)
+        sort_info = None
+        filter_info = None
 
-        filter = input("\nФильтровать? (y/n): ").lower()
+        if ask_confirmation("Сортировать?"):
+            books, sort_info = self._sort_books(books)
 
-        if filter == "y":
-            books = self._filte_books(books)
+        if ask_confirmation("Фильтровать?"):
+            books, filter_info = self._filter_books(books)
+
+        console.clear()
+
+        show_screen(
+            title="КНИГИ",
+            options=[
+                ("1", "Показать все книги"),
+                ("2", "Найти книгу по ID"),
+                ("3", "Добавить книгу"),
+                ("4", "Изменить книгу"),
+                ("5", "Удалить книгу"),
+                ("0", "Назад"),
+            ],
+        )
+
+        if sort_info:
+            show_info(sort_info)
+
+        if filter_info:
+            show_info(filter_info)
 
         self._print_books(books)
+        wait_for_enter()
 
     def find_by_id(self) -> None:
-        try:
-            book_id = int(input("Введите ID книги для поиска: "))
-        except ValueError:
-            print("Ошибка: ID должен быть целым числом")
-            return
+        book_id = ask_int("Введите ID книги для поиска")
 
         try:
             book = self.book_service.find_by_id(book_id)
         except BookNotFound as e:
-            print(e)
+            show_error(str(e))
+            wait_for_enter()
             return
-        
-        print(" Книга найдена ")
-        print("\n+" + "-" * 38 + "+")
-        print(book)
-        print("\n+" + "-" * 38 + "+")
-            
+
+        console.print(
+            create_table(
+                columns=[
+                    "ID",
+                    "Название",
+                    "Автор",
+                    "Издательство",
+                    "Цена",
+                    "Доступна",
+                ],
+                rows=[[
+                    str(book.id),
+                    book.title,
+                    book.author_name,
+                    book.publisher_name,
+                    str(book.price),
+                    "Да" if book.is_available else "Нет",
+                ]],
+                title="Книга найдена",
+            )
+        )
+
+        wait_for_enter()
+
     def add(self) -> None:
-        print(" === Добавление новой книги ===")
-        title = input("Введите название книги: ")
-        isbn = input("Введите ISBN книги: ")
-        
-        try:
-            pages = int(input("Введите количество страниц: "))
-            price = float(input("Введите цену книги: "))
-            published_at = date.fromisoformat(input("Введите дату публикации (ГГГГ-ММ-ДД): "))
-            author_id = int(input("Введите ID автора: "))
-            publisher_id = int(input("Введите ID издательства: "))
-        except:
-            print("Ошибка: количество странц книги должно быть целым числом.")
-        
-        is_available = input("Книга доступна? (y/n): ").strip().lower()
-        
-        if is_available == "y":
-            is_available = True
-        if is_available == "n":
-            is_available = False
-        else:
-            print("\nОшибка: введите «y» или «n».")
-            return
-        
+        title = ask_text("Введите название книги")
+        isbn = ask_text("Введите ISBN книги")
+        pages = ask_int("Введите количество страниц")
+        price = ask_float("Введите цену книги")
+        published_at = ask_date(
+            "Введите дату публикации (ГГГГ-ММ-ДД)"
+        )
+        author_id = ask_int("Введите ID автора")
+        publisher_id = ask_int("Введите ID издательства")
+
+        is_available = ask_confirmation("Книга доступна?")
+
         book = Book(
             id=0,
             title=title,
@@ -107,276 +157,444 @@ class BookMenu:
             published_at=published_at,
             is_available=is_available,
             author_id=author_id,
-            publisher_id=publisher_id
+            publisher_id=publisher_id,
         )
 
         try:
             self.book_service.add(book)
         except LibraryError as e:
-            print(f"\n{e}")
+            show_error(str(e))
+            wait_for_enter()
             return
 
-        print("\nКнига успешно добавлена.")
+        show_success("Книга успешно добавлена.")
+        wait_for_enter()
 
     def update(self) -> None:
-        print(" === Изменение книги ===")
-
-        try:
-           book_id = int(input("Введите ID книги: "))
-        except ValueError:
-           print("Ошибка: ID книги должно быть целым числом.") 
-           return
+        book_id = ask_int("Введите ID книги")
 
         try:
             book = self.book_service.find_by_id(book_id)
         except BookNotFound as e:
-            print(e)
+            show_error(str(e))
+            wait_for_enter()
             return
-        
-        print(" --- Текущие данные книги ---")
-        print(book)
 
-        print(" --- Введите новые данные ---")
-        print("(чтобы оставить значения без изменения, нажмите Enter.)")
+        console.print(
+            create_table(
+                columns=[
+                    "ID",
+                    "Название",
+                    "Автор",
+                    "Издательство",
+                    "Цена",
+                    "Доступна",
+                ],
+                rows=[[
+                    str(book.id),
+                    book.title,
+                    book.author_name,
+                    book.publisher_name,
+                    str(book.price),
+                    "Да" if book.is_available else "Нет",
+                ]],
+                title="Текущие данные книги",
+            )
+        )
 
-        title = input(f"Название [{book.title}]: ").strip()
-        isbn = input(f"ISBN [{book.isbn}]: ").strip()
-        pages_input = input(f"Количество страниц [{book.pages}]: ").strip()
-        price_input = input(f"Цена [{book.price}]").strip()
-        published_at_input = input(f"Дата публикации [{book.published_at}]: ").strip()
-        is_available_input = input(f"Доступна [{("y" if book.is_available else "n")}]: ").strip().lower()
-        author_id_input = input(f"ID автора [{book.author_id}]: ").strip()
-        publisher_id_input = input(f"ID издательства [{book.publisher_id}]: ").strip()
+        show_warning(
+            "Чтобы оставить значение без изменения, нажмите Enter."
+        )
+
+        title = ask_text(
+            f"Название [{book.title}]"
+        )
+
+        isbn = ask_text(
+            f"ISBN [{book.isbn}]"
+        )
+
+        pages_input = ask_text(
+            f"Количество страниц [{book.pages}]"
+        )
+
+        price_input = ask_text(
+            f"Цена [{book.price}]"
+        )
+
+        published_at_input = ask_text(
+            f"Дата публикации [{book.published_at}]"
+        )
+
+        availability_input = ask_choice(
+            f"Доступна [{'y' if book.is_available else 'n'}]",
+            choices=["y", "n", ""],
+            show_choices=False,
+        )
+
+        author_id_input = ask_text(
+            f"ID автора [{book.author_id}]"
+        )
+
+        publisher_id_input = ask_text(
+            f"ID издательства [{book.publisher_id}]"
+        )
 
         if title:
             book.title = title
+
         if isbn:
             book.isbn = isbn
+
         if pages_input:
             try:
                 book.pages = int(pages_input)
             except ValueError:
-                print("Ошибка: количество страниц должно быть целым числом.")
+                show_error(
+                    "Количество страниц должно быть целым числом."
+                )
+                wait_for_enter()
                 return
+
         if price_input:
             try:
                 book.price = float(price_input)
             except ValueError:
-                print("Ошибка: цена должна быть числом.")
+                show_error("Цена должна быть числом.")
+                wait_for_enter()
                 return
+
         if published_at_input:
             try:
-                book.published_at = date.fromisoformat(published_at_input)
+                book.published_at = date.fromisoformat(
+                    published_at_input
+                )
             except ValueError:
-                print("Ошибка: дата должна быть в формате ГГГГ-ММ-ДД.")
+                show_error(
+                    "Дата должна быть в формате ГГГГ-ММ-ДД."
+                )
+                wait_for_enter()
                 return
-        if is_available_input:
-            if is_available_input == "y":
-                book.is_available = True
-            elif is_available_input == "n":
-                book.is_available = False
-            else:
-                print("Ошибка: введите «y» или «n».")
-                return
+
+        if availability_input:
+            book.is_available = availability_input == "y"
+
         if author_id_input:
             try:
                 book.author_id = int(author_id_input)
             except ValueError:
-                print("Ошибка: ID автора должно быть целым числом")
+                show_error(
+                    "ID автора должно быть целым числом."
+                )
+                wait_for_enter()
                 return
+
         if publisher_id_input:
             try:
                 book.publisher_id = int(publisher_id_input)
             except ValueError:
-                print("Ошибка: ID издательства должно быть целым числом")
+                show_error(
+                    "ID издательства должно быть целым числом."
+                )
+                wait_for_enter()
                 return
+
         try:
             self.book_service.update(book)
         except LibraryError as e:
-            print(e)
+            show_error(str(e))
+            wait_for_enter()
             return
 
-        print("\nКнига успешно изменена.")
+        show_success("Книга успешно изменена.")
+        wait_for_enter()
 
     def delete(self) -> None:
-        print(" === Удаление книги ===")
-        try:
-            book_id = int(input("Введите ID книги для удаления: "))
-        except ValueError:
-            print("Ошибка: ID должно быть целым числом.")
-        
+        book_id = ask_int(
+            "Введите ID книги для удаления"
+        )
+
         try:
             book = self.book_service.find_by_id(book_id)
         except BookNotFound as e:
-            print(e)
+            show_error(str(e))
+            wait_for_enter()
             return
 
-        print("\nВы собираетесь удалить книгу:")
-        print("-" * 40)
-        print(book)
-        print("-" * 40)
+        console.print(
+            create_table(
+                columns=[
+                    "ID",
+                    "Название",
+                    "Автор",
+                    "Издательство",
+                ],
+                rows=[[
+                    str(book.id),
+                    book.title,
+                    book.author_name,
+                    book.publisher_name,
+                ]],
+                title="Книга для удаления",
+            )
+        )
 
-        confirmation = input("Вы уверены что хотите удалить книгу? (y/n)").strip().lower
-        if confirmation != "y":
-            print("\nУдаление отменено.")
+        if not ask_confirmation(
+            "Вы уверены, что хотите удалить эту книгу?"
+        ):
+            show_warning("Удаление отменено.")
+            wait_for_enter()
             return
-        
+
         try:
             self.book_service.delete(book_id)
-        except BookNotFound as error:
-            print(error)
+        except BookNotFound as e:
+            show_error(str(e))
+            wait_for_enter()
             return
 
+        show_success("Книга успешно удалена.")
+        wait_for_enter()
 
     def _print_books(self, books: list[Book]) -> None:
-        print("\n+" + "-" * 103 + "+")
-        print(
-            f"{'| ID':<5}"
-            f"{'| Название':<30}"
-            f"{'| Автор':<25}"
-            f"{'| Издательство':<20}"
-            f"{'| Цена':<12}"
-            f"{'| Доступна':<10}|"
+        rows = [
+            [
+                str(book.id),
+                book.title,
+                book.author_name,
+                book.publisher_name,
+                str(book.price),
+                "Да" if book.is_available else "Нет",
+            ]
+            for book in books
+        ]
+
+        table = create_table(
+            columns=[
+                "ID",
+                "Название",
+                "Автор",
+                "Издательство",
+                "Цена",
+                "Доступна",
+            ],
+            rows=rows,
+            title="Список книг",
         )
-        print("\n+" + "-" * 102 + "+")
 
-        for book in books:
-            print(
-                f"{book.id:<5}"
-                f"{book.title[:28]:<30}"
-                f"{book.author_name[:23]:<25}"
-                f"{book.publisher_name[:18]:<20}"
-                f"{str(book.price):<12}"
-                f"{'Да' if book.is_available else 'Нет':<10}"
-            )
-        print("\n+" + "-" * 102 + "+")
+        console.print(table)
 
-    def _sort_books(self, books: list[Book]) -> list[Book]:
-        print("Сортировать по: ")
-        print(" 1. ID")
-        print(" 2. Названию")
-        print(" 3. Цене")
-        print(" 4. Дате публикации")
-        print(" 5. Количеству страниц")
-        print(" 0. Отмена")
+    def _sort_books(
+        self,
+        books: list[Book],
+    ) -> tuple[list[Book], str | None]:
 
-        choice = input("Выберите поле: ")
+        show_options(
+            title="СОРТИРОВКА",
+            options=[
+                ("1", "По ID"),
+                ("2", "По названию"),
+                ("3", "По цене"),
+                ("4", "По дате публикации"),
+                ("5", "По количеству страниц"),
+                ("0", "Отмена"),
+            ],
+        )
+
+        choice = ask_choice(
+            "Выберите поле для сортировки",
+            choices=["1", "2", "3", "4", "5", "0"],
+            show_choices=False,
+        )
 
         sort_fields = {
             "1": lambda book: book.id,
             "2": lambda book: book.title.lower(),
             "3": lambda book: book.price,
             "4": lambda book: book.published_at,
-            "5": lambda book: book.pages
+            "5": lambda book: book.pages,
         }
 
         if choice == "0":
-            return books
-        
-        if choice not in sort_fields:
-            print("Ошибка: такого варианта сортировки нет.")
-            return books
+            return books, None
 
-        print("\nНаправление сортировки:")
-        print(" 1. По возрастанию")
-        print(" 2. По убыванию")
+        show_options(
+            title="НАПРАВЛЕНИЕ СОРТИРОВКИ",
+            options=[
+                ("1", "По возрастанию"),
+                ("2", "По убыванию"),
+            ],
+        )
 
-        direction = input("Выберите направление: ")
+        direction = ask_choice(
+            "Выберите направление",
+            choices=["1", "2"],
+            show_choices=False,
+        )
 
-        if direction not in ("1", "2"):
-            print("Ошибка: такого направления нет.")
-            return books
-
-        reverse = direction == "2"
-
-        return sorted(
+        sorted_books = sorted(
             books,
             key=sort_fields[choice],
-            reverse=reverse
+            reverse=direction == "2",
         )
-    
-    def _filte_books(self, books: list[Book]) -> list[Book]:
-        print("\nФильтровать по:")
-        print(" 1. Доступности")
-        print(" 2. Автору")
-        print(" 3. Издательству")
-        print(" 4. Цене")
-        print(" 5. Количеству страниц")
-        print(" 0. Отмена")
 
-        choice = input("Выберите поле: ")
+        field_name = {
+            "1": "ID",
+            "2": "названию",
+            "3": "цене",
+            "4": "дате публикации",
+            "5": "количеству страниц",
+        }
+
+        direction_name = {
+            "1": "по возрастанию",
+            "2": "по убыванию",
+        }
+
+        sort_info = (
+            f'Сортировка по "{field_name[choice]}" | '
+            f"Направление: {direction_name[direction]}"
+        )
+
+        return sorted_books, sort_info
+
+    def _filter_books(
+        self,
+        books: list[Book],
+    ) -> tuple[list[Book], str | None]:
+
+        show_options(
+            title="ФИЛЬТРАЦИЯ",
+            options=[
+                ("1", "По доступности"),
+                ("2", "По автору"),
+                ("3", "По издательству"),
+                ("4", "По цене"),
+                ("5", "По количеству страниц"),
+                ("0", "Отмена"),
+            ],
+        )
+
+        choice = ask_choice(
+            "Выберите поле для фильтрации",
+            choices=["1", "2", "3", "4", "5", "0"],
+            show_choices=False,
+        )
 
         if choice == "0":
-            return books
-        
-        if choice == "1":
-            print("\n 1. Только доступные")
-            print(" 2. Только не доступные")
+            return books, None
 
-            availability = input("Выберите вариант: ")
+        if choice == "1":
+            show_options(
+                title="ДОСТУПНОСТЬ",
+                options=[
+                    ("1", "Только доступные"),
+                    ("2", "Только недоступные"),
+                ],
+            )
+
+            availability = ask_choice(
+                "Выберите вариант",
+                choices=["1", "2"],
+                show_choices=False,
+            )
 
             if availability == "1":
-                return [book for book in books if book.is_available]
-            
-            if availability == "2":
-                return [book for book in books if not book.is_available]
-            
-            print("Ошибка: такого варианта нет.")
-            return books
+                filtered_books = [
+                    book for book in books
+                    if book.is_available
+                ]
+                filter_info = "Фильтр: только доступные книги"
+
+            else:
+                filtered_books = [
+                    book for book in books
+                    if not book.is_available
+                ]
+                filter_info = "Фильтр: только недоступные книги"
+
+            return filtered_books, filter_info
 
         if choice == "2":
-            author_name = input("Введите имя автора: ").strip().lower()
+            author_name = ask_text(
+                "Введите имя автора"
+            ).strip().lower()
 
-            return [
-                book for book in books 
-                if author_name 
-                and author_name in book.author_name.lower()
+            if not author_name:
+                return books, None
+
+            filtered_books = [
+                book
+                for book in books
+                if author_name in book.author_name.lower()
             ]
-        
+
+            return (
+                filtered_books,
+                f'Фильтр: автор содержит "{author_name}"',
+            )
+
         if choice == "3":
-            publisher_name = input("Введите название издательства: ").strip().lower()
+            publisher_name = ask_text(
+                "Введите название издательства"
+            ).strip().lower()
 
-            return [
-                book for book in books
-                if publisher_name
-                and publisher_name in book.publisher_name.lower()
+            if not publisher_name:
+                return books, None
+
+            filtered_books = [
+                book
+                for book in books
+                if publisher_name in book.publisher_name.lower()
             ]
-        
+
+            return (
+                filtered_books,
+                f'Фильтр: издательство содержит "{publisher_name}"',
+            )
+
         if choice == "4":
-            try:
-                min_price = float(input("Введите минимальную цену: "))
-                max_price = float(input("Введите максимальную цену: "))
-            except ValueError:
-                print("Ошибка: цена должна быть числом.")
-                return books
+            min_price = ask_float("Введите минимальную цену")
+            max_price = ask_float("Введите максимальную цену")
 
             if min_price > max_price:
-                print("Ошибка: минимальная цена не может быть больше максимальной.")
-                return books
-            
-            return [
-                book for book in books
+                show_error(
+                    "Минимальная цена не может быть больше максимальной."
+                )
+                return books, None
+
+            filtered_books = [
+                book
+                for book in books
                 if min_price <= book.price <= max_price
             ]
 
-        if choice == "5":
-            try:
-                min_pages = int(input("Введите минимальное количество страниц: "))
-                max_pages = int(input("Введите максимальное количество страниц: "))
-            except ValueError:
-                print("Ошибка: количество страниц должно быть целым числом.")
-                return books
+            return (
+                filtered_books,
+                f"Фильтр: цена от {min_price} до {max_price}",
+            )
 
-            if min_pages > max_pages:
-                print("Ошибка: минимальное количество страниц не может быть больше максимального.")
-                return books
-            
-            return [
-                book for book in books
-                if min_pages <= book.pages <= max_pages
-            ]
-        
-        print("Ошибка: такого варианта фильрации нет.")
-        return books
-    
-    
+        min_pages = ask_int(
+            "Введите минимальное количество страниц"
+        )
+        max_pages = ask_int(
+            "Введите максимальное количество страниц"
+        )
+
+        if min_pages > max_pages:
+            show_error(
+                "Минимальное количество страниц "
+                "не может быть больше максимального."
+            )
+            return books, None
+
+        filtered_books = [
+            book
+            for book in books
+            if min_pages <= book.pages <= max_pages
+        ]
+
+        return (
+            filtered_books,
+            f"Фильтр: страниц от {min_pages} до {max_pages}",
+        )

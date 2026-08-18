@@ -1,3 +1,11 @@
+from ui.ui_helpers import (
+    console,
+    show_screen,
+    show_error,
+    ask_choice,
+    wait_for_enter,
+    PRIMARY_COLOR
+)
 
 class MainMenu:
 
@@ -13,25 +21,36 @@ class MainMenu:
     
     def show(self) -> None:
         while True:
-            print("\n+" + "-" * 38 + "+")
-            print("|" + " " * 14 + "БИБЛИОТЕКА" + " " * 14 + "|")
-            print("\n+" + "-" * 38 + "+")
-            print("|    1. Книги" + " " * 26 + "|")
-            print("|    2. Авторы" + " " * 25 + "|")
-            print("|    3. Издательства" + " " * 19 + "|")
-            print("|    0. Выход" + " " * 26 + "|")
-            print("\n+" + "-" * 38 + "+")
+            console.clear()
 
-            choice = input("| Выберите действие: ")
+            show_screen(
+                title="📚 LIBRARY SYSTEM",
+                subtitle="Система управления библиотекой",
+                options=[
+                    ("1", "Книги"),
+                    ("2", "Авторы"),
+                    ("3", "Издательства"),
+                    ("0", "Выход"),
+                ],
+            )
+
+            choice = ask_choice("Выберите раздел")
 
             if choice == "1":
                 self.book_menu.show()
+
             elif choice == "2":
                 self.author_menu.show()
+
             elif choice == "3":
                 self.publisher_menu.show()
+
             elif choice == "0":
-                print("\nДо свидания!")
+                console.print(
+                    f"\n[bold {PRIMARY_COLOR}]До свидания! 👋[/bold {PRIMARY_COLOR}]"
+                )
                 break
+
             else:
-                print("\nОшибка: такого пункта меню нет.")
+                show_error("Некорректный выбор.")
+                wait_for_enter()
